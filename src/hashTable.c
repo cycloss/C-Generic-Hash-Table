@@ -1,9 +1,5 @@
-#ifndef LINKED_LIST
-#define LINKED_LIST
-#include <linkedList.h>
-#endif
-
 #include "hashTable.h"
+#include <linkedList.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,8 +7,8 @@
 //TODO make hashtable dynamic
 // #define GROWTH_FACTOR 2
 // #define LOAD_FACTOR 0.75
-#define a 1664525
-#define c 1013904223
+#define a 214013
+#define c 2531011
 #define SIZE 1000
 
 static void fatalError(char* msg) {
@@ -27,14 +23,19 @@ static void nullCheck(hashTable* s) {
 }
 
 //simple linear congruental generator for pseudo random numbers
+//uses microsoft visual's values for a and c.
+//Good for even spread but not good for true random behaviour as almost perfectly periodic
 int hashInteger(void* val) {
-    return (a * *(int*)val + c) % SIZE;
+    return (int)((a * *(unsigned int*)val + c) % SIZE);
 }
 
 //TODO change hashfunc to accept void pointer
 hashTable* createHashTable(int (*hashFunction)(void*), bool (*comparator)(void*, void*)) {
     hashTable* ht = malloc(sizeof(hashTable));
     linkedList** buckets = malloc(sizeof(linkedList*) * SIZE);
+    for (int i = 0; i < SIZE; i++) {
+        buckets[i] = NULL;
+    }
     *ht = (hashTable) {
         SIZE,
         0,
@@ -46,19 +47,56 @@ hashTable* createHashTable(int (*hashFunction)(void*), bool (*comparator)(void*,
 }
 
 bool addItem(hashTable* ht, void* item) {
-    nullCheck(ht);
     int index = ht->_hashFunction(item);
     linkedList* l = ht->table[index];
     if (!l) {
         l = ht->table[index] = createList();
     }
     appendToList(l, item);
+    ht->_itemCount++;
 }
 
-void clear(hashTable* s) {
+void iterateTableItems(hashTable* ht, void (*iterator)(void*)) {
+    for (int i = 0; i < ht->_bucketCount; i++) {
+        linkedList* bucket = ht->table[i];
+        if (bucket) {
+            iterateListValues(bucket, iterator);
+        }
+    }
 }
 
-bool removeItem(void* item) {
+void clearTable(hashTable* ht) {
+    for (int i = 0; i < ht->_bucketCount; i++) {
+        linkedList* bucket = ht->table[i];
+        if (bucket) {
+            freeList(bucket);
+            ht->table[i] = NULL;
+        }
+    }
+    ht->_itemCount = 0;
+}
+
+void freeHashTable(hashTable* ht) {
+    clearTable(ht);
+    free(ht->table);
+    free(ht);
+}
+
+bool removeTableItem(hashTable* ht, void* item) {
+    int hashedInd = ht->_hashFunction(item);
+    linkedList* l = ht->table[hashedInd];
+    if (l) {
+        void* removed = removeValue(l, item, ht->_comparator);
+        if (removed) {
+            free(removed);
+            ht->_itemCount--;
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
 }
 
 bool contains(hashTable* s, void* key) {
@@ -86,7 +124,5 @@ void* getValue(hashTable* s, void* key) {
 }
 
 bool isEmpty(hashTable* s) {
-}
-
-void freeSet(hashTable* s) {
+    return s->_itemCount == 0;
 }

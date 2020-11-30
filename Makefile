@@ -9,7 +9,7 @@ OS := $(shell uname)
 
 .PHONY: test
 test: $(SOURCE_FILES) $(HEADER_FILES)
-	gcc -Wall $(SOURCE_FILES) $(TEST_FILE) -llinkedlist -o $(TEST_NAME)
+	gcc -Wall $(SOURCE_FILES) $(TEST_FILE) -lGenericStructures -o $(TEST_NAME)
 
 ./$(TEST_NAME): test
 
@@ -19,17 +19,16 @@ leakCheck: ./$(TEST_NAME)
 
 ifeq ($(OS), Darwin)
 
-LIB_NAME = libhashtable.a
+LIB_NAME = libGenericStructures.a
 OBJECT_FILES = hashtable.o
 DESTDIR = /usr/local
 
 .PHONY: install
 install: $(LIB_NAME) $(HEADER_FILES)
-	mv $(LIB_NAME) $(DESTDIR)/lib
 	cp $(HEADER_FILES) $(DESTDIR)/include
 
 $(LIB_NAME): $(OBJECT_FILES)
-	ar -rcs $(LIB_NAME) $(OBJECT_FILES)
+	ar -rcs $(DESTDIR)/lib/$(LIB_NAME) $(OBJECT_FILES)
 	rm -f $(OBJECT_FILES)
 
 $(OBJECT_FILES): $(SOURCE_FILES)

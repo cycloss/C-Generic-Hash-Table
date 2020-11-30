@@ -1,7 +1,15 @@
-
 #include "../src/hashTable.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+void printItem(void* item) {
+    printf("%i, ", *(int*)item);
+}
+
+void printTable(hashTable* ht) {
+    iterateTableItems(ht, printItem);
+    puts("");
+}
 
 int main() {
 
@@ -12,13 +20,12 @@ int main() {
         *nump = i;
         addItem(ht, nump);
     }
+    printTable(ht);
+    int itemToRemove = 5;
+    removeTableItem(ht, &itemToRemove) ? printf("Removed: %i\n", itemToRemove) : printf("Failed to remove %i\n", itemToRemove);
 
-    for (int i = 0; i < 20; i++) {
-        bool hasVal = contains(ht, &i);
-        if (hasVal) {
-            puts("Val present");
-        } else {
-            puts("Val not present");
-        }
-    }
+    printTable(ht);
+    clearTable(ht);
+    iterateTableItems(ht, printItem);
+    freeHashTable(ht);
 }

@@ -1,8 +1,4 @@
-#ifndef LINKED_LIST
-#define LINKED_LIST
 #include <linkedList.h>
-#endif
-
 #include <stdbool.h>
 
 //TODO fix the fact that linked list nodes are declared twice
@@ -23,9 +19,10 @@ typedef struct {
 int hashInteger(void* val);
 hashTable* createHashTable(int (*hashFunction)(void*), bool (*comparator)(void*, void*));
 bool addItem(hashTable* ht, void* item);
-void clear(hashTable* s);
-bool removeItem(void* item);
-bool contains(hashTable* s, void* key);
-void* getValue(hashTable* s, void* key);
-bool isEmpty(hashTable* s);
-void freeSet(hashTable* s);
+void clearTable(hashTable* ht);
+bool removeTableItem(hashTable* ht, void* item);
+bool contains(hashTable* ht, void* key);
+void iterateTableItems(hashTable* ht, void (*iterator)(void*));
+void* getValue(hashTable* ht, void* key);
+bool isEmpty(hashTable* ht);
+void freeHashTable(hashTable* ht);
