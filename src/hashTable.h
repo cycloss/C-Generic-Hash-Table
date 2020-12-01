@@ -1,7 +1,8 @@
+#ifndef HASH_TABLE_H
+#define HASH_TABLE_H
+
 #include <linkedList.h>
 #include <stdbool.h>
-
-//TODO fix the fact that linked list nodes are declared twice
 
 typedef struct {
     int _bucketCount;
@@ -18,11 +19,13 @@ typedef struct {
 
 int hashInteger(void* val);
 hashTable* createHashTable(int (*hashFunction)(void*), bool (*comparator)(void*, void*));
-bool addItem(hashTable* ht, void* item);
-void clearTable(hashTable* ht);
+bool addTableItem(hashTable* ht, void* item);
 bool removeTableItem(hashTable* ht, void* item);
-bool contains(hashTable* ht, void* key);
+bool tableContains(hashTable* ht, void* key);
 void iterateTableItems(hashTable* ht, void (*iterator)(void*));
 void* getValue(hashTable* ht, void* key);
 bool isEmpty(hashTable* ht);
-void freeHashTable(hashTable* ht);
+void clearTable(hashTable* ht, bool freeValues);
+void freeTable(hashTable* ht, bool freeValues);
+
+#endif

@@ -7,20 +7,13 @@
 //TODO make hashtable dynamic
 // #define GROWTH_FACTOR 2
 // #define LOAD_FACTOR 0.75
+
+//TODO make string hashing function
+//TODO make example of custom hashing function in example
+
 #define a 214013
 #define c 2531011
 #define SIZE 1000
-
-static void fatalError(char* msg) {
-    printf("Fatal error: %s\n", msg);
-    exit(1);
-}
-
-static void nullCheck(hashTable* s) {
-    if (!s) {
-        fatalError("hashTable was null");
-    }
-}
 
 //simple linear congruental generator for pseudo random numbers
 //uses microsoft visual's values for a and c.
@@ -29,7 +22,6 @@ int hashInteger(void* val) {
     return (int)((a * *(unsigned int*)val + c) % SIZE);
 }
 
-//TODO change hashfunc to accept void pointer
 hashTable* createHashTable(int (*hashFunction)(void*), bool (*comparator)(void*, void*)) {
     hashTable* ht = malloc(sizeof(hashTable));
     linkedList** buckets = malloc(sizeof(linkedList*) * SIZE);
@@ -46,7 +38,7 @@ hashTable* createHashTable(int (*hashFunction)(void*), bool (*comparator)(void*,
     return ht;
 }
 
-bool addItem(hashTable* ht, void* item) {
+bool addTableItem(hashTable* ht, void* item) {
     int index = ht->_hashFunction(item);
     linkedList* l = ht->table[index];
     if (!l) {
@@ -54,6 +46,7 @@ bool addItem(hashTable* ht, void* item) {
     }
     appendToList(l, item);
     ht->_itemCount++;
+    return l;
 }
 
 void iterateTableItems(hashTable* ht, void (*iterator)(void*)) {
@@ -65,19 +58,19 @@ void iterateTableItems(hashTable* ht, void (*iterator)(void*)) {
     }
 }
 
-void clearTable(hashTable* ht) {
+void clearTable(hashTable* ht, bool freeValues) {
     for (int i = 0; i < ht->_bucketCount; i++) {
         linkedList* bucket = ht->table[i];
         if (bucket) {
-            freeList(bucket);
+            freeList(bucket, freeValues);
             ht->table[i] = NULL;
         }
     }
     ht->_itemCount = 0;
 }
 
-void freeHashTable(hashTable* ht) {
-    clearTable(ht);
+void freeTable(hashTable* ht, bool freeValues) {
+    clearTable(ht, freeValues);
     free(ht->table);
     free(ht);
 }
@@ -99,30 +92,28 @@ bool removeTableItem(hashTable* ht, void* item) {
     }
 }
 
-bool contains(hashTable* s, void* key) {
-    nullCheck(s);
-    int hashedInd = s->_hashFunction(key);
-    linkedList* l = s->table[hashedInd];
+bool tableContains(hashTable* ht, void* key) {
+    int hashedInd = ht->_hashFunction(key);
+    linkedList* l = ht->table[hashedInd];
     if (l) {
-        int index = findIndexOfValue(l, key, s->_comparator);
+        int index = findIndexOfValue(l, key, ht->_comparator);
         return index != -1;
     } else {
         return false;
     }
 }
 
-void* getValue(hashTable* s, void* key) {
-    nullCheck(s);
-    int hashedInd = s->_hashFunction(key);
-    linkedList* l = s->table[hashedInd];
+void* getValue(hashTable* ht, void* key) {
+    int hashedInd = ht->_hashFunction(key);
+    linkedList* l = ht->table[hashedInd];
     if (l) {
-        int index = findIndexOfValue(l, key, s->_comparator);
+        int index = findIndexOfValue(l, key, ht->_comparator);
         return index == -1 ? NULL : getValueAt(l, index);
     } else {
         return NULL;
     }
 }
 
-bool isEmpty(hashTable* s) {
-    return s->_itemCount == 0;
+bool isEmpty(hashTable* ht) {
+    return ht->_itemCount == 0;
 }

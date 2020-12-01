@@ -14,18 +14,17 @@ void printTable(hashTable* ht) {
 int main() {
 
     hashTable* ht = createHashTable(hashInteger, intComparator);
-
-    for (int i = 0; i < 10; i++) {
-        int* nump = malloc(sizeof(int));
-        *nump = i;
-        addItem(ht, nump);
+    int nums[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    int len = sizeof(nums) / sizeof(int);
+    for (int i = 0; i < len; i++) {
+        addTableItem(ht, &nums[i]);
     }
     printTable(ht);
     int itemToRemove = 5;
     removeTableItem(ht, &itemToRemove) ? printf("Removed: %i\n", itemToRemove) : printf("Failed to remove %i\n", itemToRemove);
 
     printTable(ht);
-    clearTable(ht);
+    clearTable(ht, false);
     iterateTableItems(ht, printItem);
-    freeHashTable(ht);
+    freeTable(ht, false);
 }
