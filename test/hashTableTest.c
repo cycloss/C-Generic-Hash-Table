@@ -6,7 +6,11 @@
 int main() {
 
     hashTable* ht = createHashTable(hashInteger, intComparator);
-    int nums[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    int nums[80];
+    for (int i = 0; i < len(nums); i++) {
+        nums[i] = i + 1;
+        addTableItem(ht, &nums[i]);
+    }
     for (int i = 0; i < len(nums); i++) {
         addTableItem(ht, &nums[i]);
     }

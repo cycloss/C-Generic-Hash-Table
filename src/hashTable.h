@@ -7,7 +7,7 @@
 typedef struct {
     int _bucketCount;
     int _itemCount;
-    int (*_hashFunction)(void*);
+    int (*_hashFunction)(void*, int);
     bool (*_comparator)(void*, void*);
     linkedList** table;
 } hashTable;
@@ -17,9 +17,9 @@ typedef struct {
     void* value;
 } tableItem;
 
-int hashInteger(void* val);
-int hashString(void* str);
-hashTable* createHashTable(int (*hashFunction)(void*), bool (*comparator)(void*, void*));
+int hashInteger(void* val, int htSize);
+int hashString(void* str, int htSize);
+hashTable* createHashTable(int (*hashFunction)(void*, int), bool (*comparator)(void*, void*));
 bool addTableItem(hashTable* ht, void* item);
 void* removeTableItem(hashTable* ht, void* item);
 bool tableContains(hashTable* ht, void* key);
