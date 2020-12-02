@@ -18,9 +18,10 @@ typedef struct {
 } tableItem;
 
 int hashInteger(void* val);
+int hashString(void* str);
 hashTable* createHashTable(int (*hashFunction)(void*), bool (*comparator)(void*, void*));
 bool addTableItem(hashTable* ht, void* item);
-bool removeTableItem(hashTable* ht, void* item);
+void* removeTableItem(hashTable* ht, void* item);
 bool tableContains(hashTable* ht, void* key);
 void iterateTableItems(hashTable* ht, void (*iterator)(void*));
 void* getValue(hashTable* ht, void* key);

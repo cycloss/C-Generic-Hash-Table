@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+//TODO write readme
 //TODO make hashtable dynamic
 // #define GROWTH_FACTOR 2
 // #define LOAD_FACTOR 0.75
@@ -20,6 +21,26 @@
 //Good for even spread but not good for true random behaviour as almost perfectly periodic
 int hashInteger(void* val) {
     return (int)((a * *(unsigned int*)val + c) % SIZE);
+}
+
+static int stringLength(char* str) {
+    int len = 0;
+    for (char ch = *str; ch != '\0'; str++, ch = *str, len++)
+        ;
+    return len;
+}
+
+int hashString(void* str) {
+    char* strCasted = (char*)str;
+    unsigned int fullHash = 0;
+    unsigned int previousCharHash = 7;
+    int len = stringLength(strCasted);
+    for (int i = 0; i < len; i++) {
+        unsigned int hash = hashInteger(&strCasted[i]);
+        fullHash += hash * previousCharHash;
+        previousCharHash = hash;
+    }
+    return fullHash % SIZE;
 }
 
 hashTable* createHashTable(int (*hashFunction)(void*), bool (*comparator)(void*, void*)) {
@@ -75,20 +96,23 @@ void freeTable(hashTable* ht, bool freeValues) {
     free(ht);
 }
 
-bool removeTableItem(hashTable* ht, void* item) {
+/**
+ * Removes the item from the table. Does not call free on the item removed.
+ * @return pointer to the item if successful, NULL if table did not contain item.
+ **/
+void* removeTableItem(hashTable* ht, void* item) {
     int hashedInd = ht->_hashFunction(item);
     linkedList* l = ht->table[hashedInd];
     if (l) {
         void* removed = removeValue(l, item, ht->_comparator);
         if (removed) {
-            free(removed);
             ht->_itemCount--;
-            return true;
+            return removed;
         } else {
-            return false;
+            return NULL;
         }
     } else {
-        return false;
+        return NULL;
     }
 }
 
