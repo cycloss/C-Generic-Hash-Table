@@ -9,7 +9,6 @@
 // #define GROWTH_FACTOR 2
 // #define LOAD_FACTOR 0.75
 
-//TODO make string hashing function
 //TODO make example of custom hashing function in example
 
 #define a 214013

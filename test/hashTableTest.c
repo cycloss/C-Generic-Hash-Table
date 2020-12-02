@@ -15,17 +15,17 @@ int main() {
     removeTableItem(ht, &itemToRemove) ? printf("Removed: %i\n", itemToRemove) : printf("Failed to remove %i\n", itemToRemove);
 
     printIntTable(ht);
-    clearTable(ht, false);
+    freeTable(ht, false);
 
+    hashTable* ht2 = createHashTable(hashString, stringComparator);
     char* strs[] = { "a", "b", "aba", "aab" };
 
     for (int i = 0; i < len(strs); i++) {
-        addTableItem(ht, strs[i]);
+        addTableItem(ht2, strs[i]);
     }
 
-    printStrTable(ht);
-
-    freeTable(ht, false);
+    printStrTable(ht2);
+    freeTable(ht2, false);
 }
 
 void printIntItem(void* item) {
