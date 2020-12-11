@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 //TODO write readme
+//TODO reorder functions
 
 // Factor representing the number of items currently held in the table as a proportion of total table size, past which the table will expand by GROWTH_FACTOR
 #define LOAD_FACTOR 0.75
@@ -31,8 +32,8 @@ static int generateRand(int seed) {
     return (int)(a * (unsigned int)seed + c);
 }
 
-int hashInteger(void* num, int htSize) {
-    return generateRand(*(int*)num) % htSize;
+unsigned int hashInteger(void* num) {
+    return generateRand(*(int*)num);
 }
 
 static int stringLength(char* str) {
@@ -42,7 +43,7 @@ static int stringLength(char* str) {
     return len;
 }
 
-int hashString(void* str, int htSize) {
+unsigned int hashString(void* str) {
     char* strCasted = (char*)str;
     unsigned int fullHash = 0;
     unsigned int previousCharHash = 7;
@@ -52,10 +53,14 @@ int hashString(void* str, int htSize) {
         fullHash += hash * previousCharHash;
         previousCharHash = hash;
     }
-    return fullHash % htSize;
+    return fullHash;
 }
 
-hashTable* createHashTable(int (*hashFunction)(void*, int), bool (*comparator)(void*, void*)) {
+static int generateTableHash(unsigned int rawHash, int tableSize) {
+    return rawHash % tableSize;
+}
+
+hashTable* createHashTable(unsigned int (*hashFunction)(void*), bool (*comparator)(void*, void*)) {
     hashTable* ht = malloc(sizeof(hashTable));
     linkedList** buckets = malloc(sizeof(linkedList*) * INITIAL_SIZE);
     for (int i = 0; i < INITIAL_SIZE; i++) {
@@ -76,7 +81,7 @@ static void rehashTable(hashTable* ht, linkedList** newTable, int newSize) {
         linkedList* bucket = ht->table[i];
         if (bucket) {
             for (void* removed = removeFirst(bucket); removed; removed = removeFirst(bucket)) {
-                int newHash = ht->_hashFunction(removed, newSize);
+                int newHash = generateTableHash(ht->_hashFunction(removed), newSize);
                 linkedList* l = newTable[newHash];
                 if (!l) {
                     l = newTable[newHash] = createList();
@@ -102,7 +107,7 @@ static void expandHashTable(hashTable* ht) {
 }
 
 bool addTableItem(hashTable* ht, void* item) {
-    int index = ht->_hashFunction(item, ht->_bucketCount);
+    int index = generateTableHash(ht->_hashFunction(item), ht->_bucketCount);
     linkedList* l = ht->table[index];
     if (!l) {
         l = ht->table[index] = createList();
@@ -148,7 +153,7 @@ void freeTable(hashTable* ht, bool freeValues) {
  * @return pointer to the item if successful, NULL if table did not contain item.
  **/
 void* removeTableItem(hashTable* ht, void* item) {
-    int hashedInd = ht->_hashFunction(item, ht->_bucketCount);
+    int hashedInd = generateTableHash(ht->_hashFunction(item), ht->_bucketCount);
     linkedList* l = ht->table[hashedInd];
     if (l) {
         void* removed = removeValue(l, item, ht->_comparator);
@@ -164,7 +169,7 @@ void* removeTableItem(hashTable* ht, void* item) {
 }
 
 bool tableContains(hashTable* ht, void* key) {
-    int hashedInd = ht->_hashFunction(key, ht->_bucketCount);
+    int hashedInd = generateTableHash(ht->_hashFunction(key), ht->_bucketCount);
     linkedList* l = ht->table[hashedInd];
     if (l) {
         int index = findIndexOfValue(l, key, ht->_comparator);
@@ -175,7 +180,7 @@ bool tableContains(hashTable* ht, void* key) {
 }
 
 void* getValue(hashTable* ht, void* key) {
-    int hashedInd = ht->_hashFunction(key, ht->_bucketCount);
+    int hashedInd = generateTableHash(ht->_hashFunction(key), ht->_bucketCount);
     linkedList* l = ht->table[hashedInd];
     if (l) {
         int index = findIndexOfValue(l, key, ht->_comparator);

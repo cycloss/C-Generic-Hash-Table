@@ -14,6 +14,14 @@ int main() {
     for (int i = 0; i < len(nums); i++) {
         addTableItem(ht, &nums[i]);
     }
+    int rejectCount = 0;
+    for (int i = 0; i < len(nums); i++) {
+        if (!addTableItem(ht, &nums[i])) {
+            rejectCount++;
+        }
+    }
+    printf("Duplicate reject count: %d\n", rejectCount);
+
     printIntTable(ht);
     int itemToRemove = 5;
     removeTableItem(ht, &itemToRemove) ? printf("Removed: %i\n", itemToRemove) : printf("Failed to remove %i\n", itemToRemove);
