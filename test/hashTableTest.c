@@ -1,7 +1,8 @@
 #include "../src/hashTable.h"
-#include "hashTableTest.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+#define len(x) sizeof(x) / sizeof(x[0])
 
 int main() {
 
@@ -38,22 +39,9 @@ int main() {
 
     printStrTable(ht2);
     freeTable(ht2, false);
-}
 
-void printIntItem(void* item) {
-    printf("%i, ", *(int*)item);
-}
-
-void printIntTable(hashTable* ht) {
-    iterateTableItems(ht, printIntItem);
-    puts("");
-}
-
-void printStrItem(void* item) {
-    printf("%s, ", (char*)item);
-}
-
-void printStrTable(hashTable* ht) {
-    iterateTableItems(ht, printStrItem);
-    puts("");
+    hashTable* ht3 = createHashTable(hashString, stringComparator);
+    addTableItems(ht3, 4, "foo", "bar", "baz", "qux");
+    printStrTable(ht3);
+    freeTable(ht, false);
 }

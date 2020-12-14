@@ -1,5 +1,6 @@
 #include "hashTable.h"
 #include <linkedList.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -122,6 +123,15 @@ bool addTableItem(hashTable* ht, void* item) {
     return l;
 }
 
+void addTableItems(hashTable* ht, int args, ...) {
+    va_list ls;
+    va_start(ls, args);
+    for (int i = 0; i < args; i++) {
+        addTableItem(ht, va_arg(ls, void*));
+    }
+    va_end(ls);
+}
+
 void iterateTableItems(hashTable* ht, void (*iterator)(void*)) {
     for (int i = 0; i < ht->_bucketCount; i++) {
         linkedList* bucket = ht->table[i];
@@ -192,4 +202,22 @@ void* getValue(hashTable* ht, void* key) {
 
 bool isEmpty(hashTable* ht) {
     return ht->_itemCount == 0;
+}
+
+static void printIntItem(void* item) {
+    printf("%i\n", *(int*)item);
+}
+
+void printIntTable(hashTable* ht) {
+    iterateTableItems(ht, printIntItem);
+    puts("");
+}
+
+static void printStrItem(void* item) {
+    printf("%s\n", (char*)item);
+}
+
+void printStrTable(hashTable* ht) {
+    iterateTableItems(ht, printStrItem);
+    puts("");
 }
