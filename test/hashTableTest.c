@@ -6,7 +6,7 @@
 
 int main() {
 
-    hashTable* ht = createHashTable(hashInteger, intComparator);
+    hashTable* ht = createHashTable(intHash, intComp);
     int nums[80];
     for (int i = 0; i < len(nums); i++) {
         nums[i] = i + 1;
@@ -30,7 +30,7 @@ int main() {
     printIntTable(ht);
     freeTable(ht, false);
 
-    hashTable* ht2 = createHashTable(hashString, stringComparator);
+    hashTable* ht2 = createHashTable(strHash, strComp);
     char* strs[] = { "a", "b", "aba", "aab" };
 
     for (int i = 0; i < len(strs); i++) {
@@ -40,7 +40,7 @@ int main() {
     printStrTable(ht2);
     freeTable(ht2, false);
 
-    hashTable* ht3 = createHashTable(hashString, stringComparator);
+    hashTable* ht3 = createHashTable(strHash, strComp);
     addTableItems(ht3, 4, "foo", "bar", "baz", "qux");
     printStrTable(ht3);
     freeTable(ht, false);

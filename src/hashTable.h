@@ -17,8 +17,8 @@ typedef struct {
     void* value;
 } tableItem;
 
-unsigned int hashInteger(void* val);
-unsigned int hashString(void* str);
+unsigned int intHash(void* val);
+unsigned int strHash(void* str);
 hashTable* createHashTable(unsigned int (*hashFunction)(void*), bool (*comparator)(void*, void*));
 bool addTableItem(hashTable* ht, void* item);
 void addTableItems(hashTable* ht, int args, ...);

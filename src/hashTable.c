@@ -33,7 +33,7 @@ static int generateRand(int seed) {
     return (int)(a * (unsigned int)seed + c);
 }
 
-unsigned int hashInteger(void* num) {
+unsigned int intHash(void* num) {
     return generateRand(*(int*)num);
 }
 
@@ -44,7 +44,7 @@ static int stringLength(char* str) {
     return len;
 }
 
-unsigned int hashString(void* str) {
+unsigned int strHash(void* str) {
     char* strCasted = (char*)str;
     unsigned int fullHash = 0;
     unsigned int previousCharHash = 7;
